@@ -10,7 +10,7 @@ diagnostics-ui = { path = "../diagnostics-ui" }
 thiserror = "1.0.61"
 
 [dependencies.bevy]
-path = "../../../bevy"
+version = "0.13.0"
 default-features = false
 features = [
     # Copied from bevy with "bevy_audio" removed

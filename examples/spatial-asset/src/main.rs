@@ -2,8 +2,6 @@ use crate::asset::{CustomAsset, CustomAssetLoader};
 use crate::camera::{CameraPlugin, FpsCam};
 use crate::ui::UiPlugin;
 use bevy::asset::LoadState;
-use bevy::color::palettes::css::GREY;
-use bevy::color::palettes::tailwind::GREEN_300;
 use bevy::math::primitives::Plane3d;
 use bevy::math::vec3;
 use bevy::prelude::*;
@@ -43,7 +41,7 @@ fn setup_scene_basics(
         transform: Transform::from_scale(Vec3::splat(100.0)),
         mesh: meshes.add(Plane3d::default().mesh()),
         material: materials.add(StandardMaterial {
-            base_color: GREY.into(),
+            base_color: Color::SILVER,
             ..default()
         }),
         ..default()
@@ -167,7 +165,7 @@ fn setup_spatial_sphere_after_load(
                         mesh: meshes.add(Sphere::new(0.1).mesh()),
                         material: materials.add(StandardMaterial {
                             base_color: Color::WHITE,
-                            emissive: GREEN_300.into(),
+                            emissive: Color::GREEN,
                             ..default()
                         }),
                         transform: Transform::from_xyz(0., 0., 2.5),
