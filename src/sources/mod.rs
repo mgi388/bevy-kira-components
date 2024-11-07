@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use kira::manager::AudioManager;
 
 use crate::backend::AudioBackend;
-use crate::spatial::SpatialEmitterHandle;
+use crate::spatial::{SpatialEmitter, SpatialEmitterHandle};
 use crate::{AudioPlaybackSet, AudioSourceSetup, AudioWorld, InternalAudioMarker};
 
 pub mod audio_file;
@@ -128,14 +128,35 @@ impl<T: AudioSource> AudioSourcePlugin<T> {
                 Entity,
                 &Handle<T>,
                 &T::Settings,
+                Option<&SpatialEmitter>,
                 Option<&SpatialEmitterHandle>,
                 &OutputDestination,
             ),
             Without<AudioHandle<T::Handle>>,
         >,
     ) {
-        for (entity, source, settings, spatial_emitter, output_destination) in &q_added {
-            let output_destination = if let Some(emitter) = spatial_emitter {
+        let _span = info_span!("audio_added").entered();
+
+        for (
+            entity,
+            source,
+            settings,
+            spatial_emitter,
+            spatial_emitter_handle,
+            output_destination,
+        ) in &q_added
+        {
+            // SpatialEmitterHandle is only added in a system which listens to
+            // Added<InternalAudioMarker>, and so this system may run before
+            // InternalAudioMarker has been added. If there is a SpatialEmitter
+            // but no SpatialEmitterHandle, we're not ready to create the audio
+            // handle, so bail out and wait for the next frame.
+            if spatial_emitter.is_some() && spatial_emitter_handle.is_none() {
+                info!("No spatial emitter handle yet, waiting for next frame");
+                continue;
+            }
+
+            let output_destination = if let Some(emitter) = spatial_emitter_handle {
                 kira::OutputDestination::Emitter(emitter.0.id())
             } else {
                 let output_handle = match output_destination {
