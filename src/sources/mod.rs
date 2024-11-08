@@ -75,6 +75,7 @@ impl<T: AudioSource> Plugin for AudioSourcePlugin<T> {
         app.init_asset::<T>().add_systems(
             PostUpdate,
             Self::audio_added
+                .run_if(resource_exists::<AudioWorld>)
                 .in_set(AudioPlaybackSet::Update)
                 .in_set(AudioSourceSetup),
         );
