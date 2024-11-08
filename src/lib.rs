@@ -104,14 +104,16 @@ pub struct AudioPlugin;
 
 impl Plugin for AudioPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<AudioWorld>()
-            .add_plugins((
-                #[cfg(feature = "diagnostics")]
-                diagnostics::KiraStatisticsDiagnosticPlugin,
-                SpatialAudioPlugin,
-                AudioFilePlugin,
-            ))
-            .configure_sets(PreUpdate, AudioPlaybackSet::Setup)
+        app.init_resource::<AudioWorld>();
+        app.add_plugins((
+            #[cfg(feature = "diagnostics")]
+            diagnostics::KiraStatisticsDiagnosticPlugin,
+            SpatialAudioPlugin,
+        ));
+        if !app.is_plugin_added::<AudioFilePlugin>() {
+            app.add_plugins(AudioFilePlugin);
+        }
+        app.configure_sets(PreUpdate, AudioPlaybackSet::Setup)
             .configure_sets(
                 PostUpdate,
                 AudioPlaybackSet::Update.after(TransformSystem::TransformPropagate),
