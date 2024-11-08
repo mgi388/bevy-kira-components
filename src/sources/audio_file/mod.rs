@@ -16,8 +16,11 @@ use thiserror::Error;
 use crate::prelude::{AudioFile, AudioFileHandle, AudioFileLoader};
 use crate::AudioPlaybackSet;
 
-use super::{AudioBundle, AudioHandle, AudioSourcePlugin};
+use self::gizmos::AudioSourceGizmoPlugin;
 
+use super::{AudioHandle, AudioSourcePlugin};
+
+pub mod gizmos;
 pub mod loader;
 pub mod source;
 
@@ -30,7 +33,7 @@ pub mod prelude {
 }
 
 /// Specialization of [`AudioBundle`] for the [`AudioFile`] asset.
-pub type AudioFileBundle = AudioBundle<AudioFile>;
+pub type AudioFileBundle = super::AudioBundle<AudioFile>;
 
 /// Implementation of an audio source using the Static and Streaming file data from [`kira`].
 pub struct AudioFilePlugin;
@@ -39,6 +42,7 @@ impl Plugin for AudioFilePlugin {
     fn build(&self, app: &mut App) {
         app.init_asset_loader::<AudioFileLoader>()
             .add_plugins(AudioSourcePlugin::<AudioFile>::default())
+            .add_plugins(AudioSourceGizmoPlugin)
             .add_systems(
                 PostUpdate,
                 on_audio_file_ended.in_set(AudioPlaybackSet::Cleanup),
