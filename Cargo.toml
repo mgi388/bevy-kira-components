@@ -22,7 +22,7 @@ serde = { version = "1.0.197", features = ["derive"] }
 [dependencies.bevy]
 version = "0.14"
 default-features = false
-features = ["bevy_asset"]
+features = ["bevy_asset", "bevy_color"]
 
 [dev-dependencies]
 ringbuf = "0.3.3"
