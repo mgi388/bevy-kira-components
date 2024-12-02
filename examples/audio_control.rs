@@ -19,7 +19,7 @@ fn main() {
 fn setup(asset_server: Res<AssetServer>, mut commands: Commands) {
     commands.spawn((
         AudioFileBundle {
-            source: asset_server.load("Windless Slopes.ogg"),
+            source: AudioSourceHandle(asset_server.load("Windless Slopes.ogg")),
             ..default()
         },
         MyMusic,
@@ -34,7 +34,7 @@ fn update_speed(
     time: Res<Time>,
 ) {
     if let Ok(mut control) = music_controller.get_single_mut() {
-        let factor = ((time.elapsed_seconds() / 5.0).sin() + 1.0).max(0.1);
+        let factor = ((time.elapsed_secs() / 5.0).sin() + 1.0).max(0.1);
         control.set_playback_rate(PlaybackRate::Factor(factor as f64), Tween::default());
     }
 }

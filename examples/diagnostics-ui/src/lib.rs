@@ -15,10 +15,8 @@ struct DiagnosticSource(DiagnosticPath);
 
 fn init_ui(mut commands: Commands, diagnostics: Res<DiagnosticsStore>) {
     commands
-        .spawn(NodeBundle {
-            background_color: BackgroundColor(Color::BLACK.with_alpha(0.4)),
-            z_index: ZIndex::Global(i32::MAX),
-            style: Style {
+        .spawn((
+            Node {
                 position_type: PositionType::Absolute,
                 right: Val::Percent(1.0),
                 top: Val::Percent(1.0),
@@ -29,54 +27,50 @@ fn init_ui(mut commands: Commands, diagnostics: Res<DiagnosticsStore>) {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            ..default()
-        })
+            BackgroundColor(Color::BLACK.with_alpha(0.4)),
+            GlobalZIndex(i32::MAX),
+        ))
         .with_children(|children| {
             for diag in diagnostics.iter() {
-                let style = TextStyle {
+                let text_font = TextFont {
                     font_size: 16.0,
-                    color: Color::WHITE,
                     ..default()
                 };
-                children.spawn((
-                    DiagnosticSource(diag.path().clone()),
-                    TextBundle {
-                        text: Text::from_sections([
-                            TextSection {
-                                value: diag.path().to_string(),
-                                style: style.clone(),
-                            },
-                            TextSection {
-                                value: " N/A".into(),
-                                style: style.clone(),
-                            },
-                            TextSection {
-                                value: format!(" {}", diag.suffix),
-                                style,
-                            },
-                        ]),
-                        style: Style {
+                let text_color = TextColor(Color::WHITE);
+                children
+                    .spawn((
+                        DiagnosticSource(diag.path().clone()),
+                        Node {
                             display: Display::Flex,
                             flex_direction: FlexDirection::Row,
                             align_content: AlignContent::End,
                             ..default()
                         },
-                        ..default()
-                    },
-                ));
+                    ))
+                    .with_child((
+                        TextSpan::new(diag.path().to_string()),
+                        text_font.clone(),
+                        text_color.clone(),
+                    ))
+                    .with_child((TextSpan::new(" N/A"), text_font.clone(), text_color.clone()))
+                    .with_child((
+                        TextSpan::new(format!(" {}", diag.suffix)),
+                        text_font,
+                        text_color,
+                    ));
             }
         });
 }
 
-fn update_ui(diagnostics: Res<DiagnosticsStore>, mut q: Query<(&DiagnosticSource, &mut Text)>) {
-    for (diag, mut text) in &mut q {
+fn update_ui(diagnostics: Res<DiagnosticsStore>, mut q: Query<(&DiagnosticSource, &mut TextSpan)>) {
+    for (diag, mut span) in &mut q {
         if let Some(value) = diagnostics
             .get(&diag.0)
             .and_then(|d| d.is_enabled.then(|| d.value()).flatten())
         {
-            text.sections[1].value = format!(" {value}");
+            **span = format!(" {value}");
         } else {
-            text.sections[1].value = " (deactivated)".to_string();
+            **span = " (deactivated)".to_string();
         }
     }
 }

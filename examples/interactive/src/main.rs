@@ -24,19 +24,16 @@ fn main() {
 struct InteractiveSound;
 
 fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle { ..default() });
+    commands.spawn(Camera2d);
     let audio_file = asset_server.load::<AudioFile>("drums.ogg");
     commands.spawn((
-        SpriteBundle {
-            transform: Transform::from_scale(Vec3::splat(25.0)),
-            sprite: Sprite {
-                color: GRAY.into(),
-                ..default()
-            },
+        Sprite {
+            color: GRAY.into(),
             ..default()
         },
+        Transform::from_scale(Vec3::splat(25.0)),
         AudioBundle {
-            source: audio_file,
+            source: AudioSourceHandle(audio_file),
             settings: AudioFileSettings {
                 loop_region: Some(Region::from(3.6..6.0)),
                 start_paused: true,
@@ -57,7 +54,7 @@ fn handle_interactive_sound(
     if keyboard.just_pressed(KeyCode::KeyA) {
         commands.spawn((
             AudioFileBundle {
-                source: asset_server.load("click.wav"),
+                source: AudioSourceHandle(asset_server.load("click.wav")),
                 ..default()
             },
             AudioFileEndBehavior::Despawn { recursive: false },

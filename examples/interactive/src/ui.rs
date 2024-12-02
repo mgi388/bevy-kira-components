@@ -17,51 +17,53 @@ impl Plugin for UiPlugin {
 
 fn ui_init(mut commands: Commands) {
     commands
-        .spawn(NodeBundle {
-            style: Style {
+        .spawn(Node {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
                 margin: UiRect::all(Val::Px(8.)),
                 ..default()
-            },
-            ..default()
         })
         .with_children(|children| {
-            let style = TextStyle {
+            let text_font = TextFont {
                 font_size: 14.0,
                 ..default()
             };
-            children.spawn(TextBundle {
-                text: Text::from_section(
-                    "Hold Space to play a looping sound, press A (on QWERTY keyboards) to send a one-shot sound",
-                    style.clone(),
-                ),
-                ..default()
-            });
             children.spawn((
-                PlaybackPos,
-                TextBundle {
-                    text: Text::from_sections([
-                        TextSection::new("Playback position: ", style.clone()),
-                        TextSection::new("0.0 s", style),
-                    ]),
-                    ..default()
-                },
+                Text::new("Hold Space to play a looping sound, press A (on QWERTY keyboards) to send a one-shot sound"),
+                    text_font.clone(),
             ));
-        });
+            children
+                .spawn((
+                    PlaybackPos,
+                    Text::default(),
+                    text_font.clone(),
+                ))
+                .with_children(|p| {
+                    p.spawn((
+                        TextSpan::new("Playback position: "),
+                        text_font.clone(),
+                    ));
+                    p.spawn((
+                        TextSpan::new("0.0 s"),
+                        text_font.clone(),
+                    ));
+
+                });
+            });
 }
 
 #[derive(Component)]
 struct PlaybackPos;
 
 fn ui_update(
-    mut q_ui: Query<&mut Text, With<PlaybackPos>>,
+    mut writer: TextUiWriter,
+    q_ui: Query<Entity, With<PlaybackPos>>,
     q_audio: Query<&AudioHandle<AudioFileHandle>, With<InteractiveSound>>,
 ) {
-    let mut text = q_ui.single_mut();
+    let text_entity = q_ui.single();
     let audio_handle_result = q_audio.get_single();
     if let Ok(handle) = audio_handle_result {
         let pos = handle.position();
-        text.sections[1].value = format!("{pos:2.1} s");
+        *writer.text(text_entity, 1) = format!("{pos:2.1} s");
     }
 }

@@ -15,8 +15,8 @@ pub mod audio_file;
 pub mod prelude {
     pub use super::audio_file::prelude::*;
     pub use super::{
-        AudioBundle, AudioHandle, AudioSource, AudioSourcePlugin, NoAudioSettings,
-        OutputDestination,
+        AudioBundle, AudioHandle, AudioSource, AudioSourceHandle, AudioSourcePlugin,
+        NoAudioSettings, OutputDestination,
     };
 }
 
@@ -95,7 +95,7 @@ pub enum OutputDestination {
 #[derive(Bundle)]
 pub struct AudioBundle<T: AudioSource> {
     /// Handle to the [`AudioSource`] asset to be played.
-    pub source: Handle<T>,
+    pub source: AudioSourceHandle<T>,
     /// Settings related to the sound to play.
     pub settings: T::Settings,
     /// Destination for the audio.
@@ -109,11 +109,34 @@ pub struct AudioBundle<T: AudioSource> {
 impl<T: AudioSource> Default for AudioBundle<T> {
     fn default() -> Self {
         Self {
-            source: Handle::default(),
+            source: AudioSourceHandle::<T>::default(),
             settings: T::Settings::default(),
             output: OutputDestination::MainOutput,
             marker: InternalAudioMarker,
         }
+    }
+}
+
+/// Handle to an audio source asset. This is a wrapper around a [`Handle`] to an
+/// [`AudioSource`].
+#[derive(Component, Clone, Debug, Deref, DerefMut, Eq, PartialEq)]
+pub struct AudioSourceHandle<T: AudioSource>(pub Handle<T>);
+
+impl<T: AudioSource> Default for AudioSourceHandle<T> {
+    fn default() -> Self {
+        Self(Handle::Weak(AssetId::default()))
+    }
+}
+
+impl<T: AudioSource> From<AudioSourceHandle<T>> for AssetId<T> {
+    fn from(handle: AudioSourceHandle<T>) -> Self {
+        handle.id()
+    }
+}
+
+impl<T: AudioSource> From<&AudioSourceHandle<T>> for AssetId<T> {
+    fn from(handle: &AudioSourceHandle<T>) -> Self {
+        handle.id()
     }
 }
 
@@ -127,7 +150,7 @@ impl<T: AudioSource> AudioSourcePlugin<T> {
         q_added: Query<
             (
                 Entity,
-                &Handle<T>,
+                &AudioSourceHandle<T>,
                 &T::Settings,
                 Option<&SpatialEmitter>,
                 Option<&SpatialEmitterHandle>,
@@ -167,8 +190,8 @@ impl<T: AudioSource> AudioSourcePlugin<T> {
             };
             let result = match assets.get(source) {
                 Some(asset)
-                    if asset_server.is_loaded_with_dependencies(source)
-                        || !asset_server.is_managed(source) =>
+                    if asset_server.is_loaded_with_dependencies(source.id())
+                        || !asset_server.is_managed(source.id()) =>
                 {
                     asset.create_handle(
                         &mut audio_world.audio_manager,

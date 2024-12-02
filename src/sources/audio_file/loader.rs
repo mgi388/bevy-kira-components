@@ -5,7 +5,7 @@
 //!
 //! This means that the streaming feature is only available on desktop platforms, and not on the web.
 use bevy::asset::io::Reader;
-use bevy::asset::{AssetLoader, AsyncReadExt, LoadContext};
+use bevy::asset::{AssetLoader, LoadContext};
 use kira::sound::static_sound::StaticSoundSettings;
 use kira::sound::streaming::StreamingSoundSettings;
 use kira::sound::FromFileError;
@@ -44,11 +44,11 @@ impl AssetLoader for AudioFileLoader {
     type Settings = AudioAssetSettings;
     type Error = AudioFileLoaderError;
 
-    async fn load<'a>(
-        &'a self,
-        reader: &'a mut Reader<'_>,
-        settings: &'a AudioAssetSettings,
-        load_context: &'a mut LoadContext<'_>,
+    async fn load(
+        &self,
+        reader: &mut dyn Reader,
+        settings: &Self::Settings,
+        load_context: &mut LoadContext<'_>,
     ) -> Result<Self::Asset, Self::Error> {
         if settings.should_stream {
             Ok(AudioFile::Streaming {

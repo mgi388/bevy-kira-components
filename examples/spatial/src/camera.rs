@@ -1,9 +1,10 @@
+use std::f32::consts::{FRAC_PI_2, TAU};
+
 use bevy::input::mouse::{MouseButtonInput, MouseMotion};
 use bevy::input::ButtonState;
 use bevy::math::vec2;
 use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, PrimaryWindow};
-use std::f32::consts::{FRAC_PI_2, TAU};
 
 pub struct CameraPlugin;
 
@@ -30,9 +31,9 @@ fn handle_fps_camera(
     mut q_camera: Query<(&mut Transform, &mut FpsCam), With<FpsCam>>,
 ) {
     let mouse_delta =
-        motion.read().fold(Vec2::ZERO, |acc, ev| acc + ev.delta) * PAN_SPEED * time.delta_seconds();
+        motion.read().fold(Vec2::ZERO, |acc, ev| acc + ev.delta) * PAN_SPEED * time.delta_secs();
     let window = q_windows.single();
-    if window.cursor.grab_mode == CursorGrabMode::None {
+    if window.cursor_options.grab_mode == CursorGrabMode::None {
         return;
     }
 
@@ -56,7 +57,7 @@ fn handle_fps_camera(
         }
 
         translation = translation.normalize_or_zero();
-        transform.translation += translation * time.delta_seconds() * MOVE_SPEED;
+        transform.translation += translation * time.delta_secs() * MOVE_SPEED;
 
         fps_cam.yaw -= mouse_delta.x;
         if fps_cam.yaw > TAU {
@@ -79,8 +80,8 @@ fn cursor_lock(
         .read()
         .any(|ev| ev.state == ButtonState::Pressed);
     if is_pressed {
-        window.cursor.grab_mode = CursorGrabMode::Locked;
-        window.cursor.visible = false;
+        window.cursor_options.grab_mode = CursorGrabMode::Locked;
+        window.cursor_options.visible = false;
     }
 }
 
@@ -90,7 +91,7 @@ fn cursor_unlock(
 ) {
     let mut window = q_windows.single_mut();
     if keys.just_released(KeyCode::Escape) {
-        window.cursor.grab_mode = CursorGrabMode::None;
-        window.cursor.visible = true;
+        window.cursor_options.grab_mode = CursorGrabMode::None;
+        window.cursor_options.visible = true;
     }
 }

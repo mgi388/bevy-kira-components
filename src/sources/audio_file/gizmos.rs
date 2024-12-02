@@ -1,6 +1,6 @@
 //! Audio source gizmos.
 
-use bevy::{color::palettes::tailwind::*, math::Quat, prelude::*, transform::TransformSystem};
+use bevy::{color::palettes::tailwind::*, prelude::*, transform::TransformSystem};
 
 use crate::spatial::SpatialEmitter;
 
@@ -11,25 +11,22 @@ fn spatial_emitter_gizmo(
     outer_color: Color,
     gizmos: &mut Gizmos<AudioSourceGizmoConfigGroup>,
 ) {
-    let position = transform.translation();
     gizmos
         .sphere(
-            position,
-            Quat::IDENTITY,
+            transform.to_isometry(),
             spatial_emitter.distances.min_distance,
             inner_color,
         )
         .resolution(32);
     gizmos
         .sphere(
-            position,
-            Quat::IDENTITY,
+            transform.to_isometry(),
             spatial_emitter.distances.max_distance,
             outer_color,
         )
         .resolution(32);
 
-    gizmos.primitive_3d(&CONICAL_FRUSTUM, position, Quat::IDENTITY, outer_color);
+    gizmos.primitive_3d(&CONICAL_FRUSTUM, transform.to_isometry(), outer_color);
 }
 
 const CONICAL_FRUSTUM: ConicalFrustum = ConicalFrustum {

@@ -34,7 +34,7 @@ fn add_motion(
 }
 
 fn update_motion(time: Res<Time>, mut q: Query<(&mut Motion, &GlobalTransform)>) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     let first_frame = dt < 1e-6;
     for (mut motion, transform) in &mut q {
         let cur_pos = transform.translation();

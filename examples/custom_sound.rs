@@ -128,7 +128,7 @@ fn setup(mut commands: Commands, mut assets: ResMut<Assets<SineWave>>) {
     // The `AudioBundle` is also generic over the sound source. You're probably already using it
     // through the `AudioFileBundle` alias for audio files.
     commands.spawn(AudioBundle {
-        source: handle,
+        source: AudioSourceHandle(handle),
         settings: SineWaveSettings { frequency: 440.0 },
         ..default()
     });

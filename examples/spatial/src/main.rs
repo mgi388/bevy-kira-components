@@ -36,10 +36,8 @@ fn init_camera(mut commands: Commands) {
     commands.spawn((
         AudioListener,
         FpsCam::default(),
-        Camera3dBundle {
-            transform,
-            ..default()
-        },
+        Camera3d::default(),
+        transform,
     ));
 }
 
@@ -58,60 +56,52 @@ fn init_objects(
         .spawn((
             Rotate(Quat::from_rotation_y(1.0)),
             InheritedVisibility::VISIBLE,
-            TransformBundle {
-                local: Transform::from_xyz(0., 1., -6.0),
-                ..default()
-            },
+            Transform::from_xyz(0., 1., -6.0),
         ))
         .with_children(|children| {
             children.spawn((
                 Doppler(1.0),
                 SpatialEmitter::default(),
                 AudioFileBundle {
-                    source,
+                    source: AudioSourceHandle(source),
                     settings: AudioFileSettings {
                         loop_region: Some(Region::from(3.6..6.0)),
                         ..default()
                     },
                     ..default()
                 },
-                PbrBundle {
-                    mesh: meshes.add(Sphere::new(0.1).mesh()),
-                    material: materials.add(StandardMaterial {
-                        base_color: Color::WHITE,
-                        emissive: GREEN.into(),
-                        ..default()
-                    }),
-                    transform: Transform::from_xyz(0., 0., 2.5),
+                Transform::from_xyz(0., 0., 2.5),
+                Mesh3d(meshes.add(Sphere::new(0.1).mesh())),
+                MeshMaterial3d(materials.add(StandardMaterial {
+                    base_color: Color::WHITE,
+                    emissive: GREEN.into(),
                     ..default()
-                },
+                })),
             ));
         });
 
     // Plane
-    commands.spawn(PbrBundle {
-        transform: Transform::from_scale(Vec3::splat(100.0)),
-        mesh: meshes.add(Plane3d::new(Vec3::Y, Vec2::ONE).mesh()),
-        material: materials.add(StandardMaterial {
+    commands.spawn((
+        Transform::from_scale(Vec3::splat(100.0)),
+        Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::ONE).mesh())),
+        MeshMaterial3d(materials.add(StandardMaterial {
             base_color: GRAY.into(),
             ..default()
-        }),
-        ..default()
-    });
+        })),
+    ));
 
     // Sun
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight {
+    commands.spawn((
+        Transform::default().looking_at(Vec3::NEG_Y, Vec3::Z),
+        DirectionalLight {
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform::default().looking_at(Vec3::NEG_Y, Vec3::Z),
-        ..default()
-    });
+    ));
 }
 
 fn rotate_objects(time: Res<Time>, mut q: Query<(&mut Transform, &Rotate)>) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     if dt < 1e-6 {
         return;
     }
