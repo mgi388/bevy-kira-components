@@ -51,12 +51,14 @@ pub trait AudioSource: Asset {
 }
 
 /// Dummy struct for cases where the audio source has no settings.
-#[derive(Debug, Default, Component)]
+#[derive(Debug, Default, Component, Reflect)]
+#[reflect(Component, Debug, Default)]
 pub struct NoAudioSettings;
 
 /// Component holding a handle to an [`AudioSource`]. Access this component from your systems to
 /// control the parameters of the sound from Bevy.
-#[derive(Debug, Deref, DerefMut, Component)]
+#[derive(Debug, Deref, DerefMut, Component, Reflect)]
+#[reflect(Component)]
 pub struct AudioHandle<T>(pub T);
 
 /// Audio source plugin, which should be added for each type of [`AudioSource`] you want to use
@@ -72,6 +74,9 @@ impl<T> Default for AudioSourcePlugin<T> {
 
 impl<T: AudioSource> Plugin for AudioSourcePlugin<T> {
     fn build(&self, app: &mut App) {
+        app.register_type::<NoAudioSettings>();
+        app.register_type::<OutputDestination>();
+
         app.init_asset::<T>().add_systems(
             PostUpdate,
             Self::audio_added
@@ -84,7 +89,8 @@ impl<T: AudioSource> Plugin for AudioSourcePlugin<T> {
 
 /// Possible output destinations for the sound. By default, it will be sent directly to the main
 /// track, but you can send it to custom tracks with optional processing on them instead.
-#[derive(Debug, Default, Component)]
+#[derive(Debug, Default, Component, Reflect)]
+#[reflect(Component, Debug, Default)]
 pub enum OutputDestination {
     /// Send the audio data to the main track (default)
     #[default]

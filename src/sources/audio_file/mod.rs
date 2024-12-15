@@ -40,6 +40,9 @@ pub struct AudioFilePlugin;
 
 impl Plugin for AudioFilePlugin {
     fn build(&self, app: &mut App) {
+        app.register_type::<AudioFileEndBehavior>();
+        app.register_type::<AudioFileSettings>();
+
         app.init_asset_loader::<AudioFileLoader>()
             .add_plugins(AudioSourcePlugin::<AudioFile>::default())
             .add_plugins(AudioSourceGizmoPlugin)
@@ -52,7 +55,8 @@ impl Plugin for AudioFilePlugin {
 
 /// Describe how the audio components (and entity) will react to the audio source reaching the
 /// end of the file.
-#[derive(Debug, Copy, Clone, Component, Default)]
+#[derive(Debug, Copy, Clone, Component, Default, Reflect)]
+#[reflect(Component, Debug, Default)]
 #[component(storage = "SparseSet")]
 pub enum AudioFileEndBehavior {
     /// Do nothing. This is the default behavior.
@@ -107,7 +111,8 @@ pub enum AudioFileError {
 }
 
 /// Settings available to the user when instantiating an audio file.
-#[derive(Debug, Component, Deserialize, Serialize)]
+#[derive(Debug, Component, Deserialize, Serialize, Reflect)]
+#[reflect(Component, Debug, Deserialize, Serialize)]
 pub struct AudioFileSettings {
     /// By default, sounds will start playing right away when inserted. Setting this to `true`
     /// prevents that.
@@ -122,8 +127,10 @@ pub struct AudioFileSettings {
     /// Panning (in 0..=1) for the sound, where 0 is hard left, and 1 is hard right.
     pub panning: f64,
     /// Optionally loop a region of the sound (given in seconds)
+    #[reflect(ignore)]
     pub loop_region: Option<Region>,
     /// Only play a specific region of the file
+    #[reflect(ignore)]
     pub play_region: Region,
     /// Play the file in reverse (not available for streaming sound files)
     pub reverse: bool,
