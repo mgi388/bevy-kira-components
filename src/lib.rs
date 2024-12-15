@@ -104,6 +104,8 @@ pub struct AudioPlugin;
 
 impl Plugin for AudioPlugin {
     fn build(&self, app: &mut App) {
+        app.register_type::<InternalAudioMarker>();
+
         app.init_resource::<AudioWorld>();
         app.add_plugins((
             #[cfg(feature = "diagnostics")]
@@ -138,7 +140,8 @@ impl FromWorld for AudioWorld {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 #[doc(hidden)]
 /// Internal marker for entities with audio components. Needed to be able to query in a
 /// non-generic way for having added audio support through the [`AudioBundle`] struct.

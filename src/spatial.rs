@@ -22,6 +22,8 @@ pub(crate) struct SpatialAudioPlugin;
 
 impl Plugin for SpatialAudioPlugin {
     fn build(&self, app: &mut App) {
+        app.register_type::<AudioListener>();
+
         app.init_resource::<SpatialWorld>()
             .add_plugins(SpatialDiagnosticsPlugin)
             .add_systems(
@@ -39,7 +41,8 @@ impl Plugin for SpatialAudioPlugin {
 
 /// Marker component setting this entity as an audio listener. It must have a [`GlobalTransform`]
 /// attached for the spatial systems to pick it up.
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct AudioListener;
 
 /// Internal handle to a Kira listener. Used to update the audio listener position.
