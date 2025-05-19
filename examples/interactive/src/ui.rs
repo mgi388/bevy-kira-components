@@ -61,7 +61,7 @@ fn ui_update(
     q_audio: Query<&AudioHandle<AudioFileHandle>, With<InteractiveSound>>,
 ) {
     let text_entity = q_ui.single();
-    let audio_handle_result = q_audio.get_single();
+    let audio_handle_result = q_audio.single().unwrap();
     if let Ok(handle) = audio_handle_result {
         let pos = handle.position();
         *writer.text(text_entity, 1) = format!("{pos:2.1} s");

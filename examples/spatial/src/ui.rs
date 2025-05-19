@@ -45,7 +45,7 @@ fn update_ui_doppler(
     q_text: Query<Entity, With<DopplerUI>>,
     q_doppler: Query<&Doppler>,
 ) {
-    let text_entity = q_text.single();
-    let doppler = q_doppler.single().0;
+    let text_entity = q_text.single().unwrap();
+    let doppler = q_doppler.single().unwrap().0;
     *writer.text(text_entity, 2) = format!("{doppler:1.2}x");
 }

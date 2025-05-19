@@ -32,7 +32,7 @@ fn handle_fps_camera(
 ) {
     let mouse_delta =
         motion.read().fold(Vec2::ZERO, |acc, ev| acc + ev.delta) * PAN_SPEED * time.delta_secs();
-    let window = q_windows.single();
+    let window = q_windows.single().unwrap();
     if window.cursor_options.grab_mode == CursorGrabMode::None {
         return;
     }
@@ -75,7 +75,7 @@ fn cursor_lock(
     mut q_windows: Query<&mut Window, With<PrimaryWindow>>,
     mut mouse_events: EventReader<MouseButtonInput>,
 ) {
-    let mut window = q_windows.single_mut();
+    let mut window = q_windows.single_mut().unwrap();
     let is_pressed = mouse_events
         .read()
         .any(|ev| ev.state == ButtonState::Pressed);
@@ -89,7 +89,7 @@ fn cursor_unlock(
     mut q_windows: Query<&mut Window, With<PrimaryWindow>>,
     keys: Res<ButtonInput<KeyCode>>,
 ) {
-    let mut window = q_windows.single_mut();
+    let mut window = q_windows.single_mut().unwrap();
     if keys.just_released(KeyCode::Escape) {
         window.cursor_options.grab_mode = CursorGrabMode::None;
         window.cursor_options.visible = true;

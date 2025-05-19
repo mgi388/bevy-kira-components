@@ -13,48 +13,62 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy_math = { version = "0.15", features = ["mint"] }
+bevy_math = { version = "0.16", features = ["mint"] }
 cpal = "0.15.3"
-kira = { version = "0.9.3", features = ["serde"] }
-thiserror = "1.0.57"
-serde = { version = "1.0.197", features = ["derive"] }
+kira = { version = "0.9", features = ["serde"] }
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
 
 [dependencies.bevy]
-version = "0.15"
+version = "0.16"
 default-features = false
-features = ["bevy_asset", "bevy_color", "bevy_gizmos"]
+features = ["bevy_asset", "bevy_color", "bevy_gizmos", "bevy_log"]
 
 [dev-dependencies]
-ringbuf = "0.3.3"
+ringbuf = "0.4"
 
 [dev-dependencies.bevy]
-version = "0.15"
+version = "0.16"
 default-features = false
 features = [
     # Copied from bevy with "bevy_audio" removed
+    "std",
+    "async_executor",
+    "android-game-activity",
+    "android_shared_stdcxx",
     "animation",
     "bevy_asset",
-    "bevy_gilrs",
-    "bevy_scene",
-    "bevy_winit",
+    "bevy_color",
     "bevy_core_pipeline",
-    "bevy_pbr",
+    "bevy_gilrs",
+    "bevy_gizmos",
     "bevy_gltf",
+    "bevy_input_focus",
+    "bevy_log",
+    "bevy_mesh_picking_backend",
+    "bevy_pbr",
+    "bevy_picking",
     "bevy_render",
+    "bevy_scene",
     "bevy_sprite",
+    "bevy_sprite_picking_backend",
+    "bevy_state",
     "bevy_text",
     "bevy_ui",
+    "bevy_ui_picking_backend",
+    "bevy_window",
+    "bevy_winit",
+    "custom_cursor",
+    "default_font",
+    "hdr",
     "multi_threaded",
     "png",
-    "hdr",
-    "vorbis",
-    "x11",
-    "bevy_gizmos",
-    "android_shared_stdcxx",
+    "smaa_luts",
+    "sysinfo_plugin",
     "tonemapping_luts",
-    "default_font",
+    "vorbis",
     "webgl2",
-    "bevy_debug_stepping",
+    "x11",
 ]
 
 [features]

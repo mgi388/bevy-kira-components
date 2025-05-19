@@ -9,7 +9,7 @@ bevy-kira-components = { path = "../..", features = ["diagnostics"] }
 diagnostics-ui = { path = "../diagnostics-ui" }
 
 [dependencies.bevy]
-version = "0.15"
+version = "0.16"
 default-features = false
 features = [
     # Copied from bevy with "bevy_audio" removed
