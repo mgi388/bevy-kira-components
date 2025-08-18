@@ -64,12 +64,9 @@ pub enum AudioFileEndBehavior {
     Nothing,
     /// Remove all components in the [`AudioFileBundle`]. This will also clean up audio resources.
     RemoveComponents,
-    /// Despawn the entity as a whole. This is only useful for cases where the entity *only*
+    /// Recursively despawn the entity as a whole. This is only useful for cases where the entity *only*
     /// serves as an audio source, will yeet your entity out of the world.
-    Despawn {
-        /// Despawning this entity will also despawn all children.
-        recursive: bool,
-    },
+    Despawn,
 }
 
 fn on_audio_file_ended(
@@ -90,12 +87,8 @@ fn on_audio_file_ended(
                         .remove::<AudioFileBundle>()
                         .remove::<AudioHandle<AudioFileHandle>>();
                 }
-                AudioFileEndBehavior::Despawn { recursive } => {
-                    if recursive {
-                        commands.entity(entity).despawn_recursive();
-                    } else {
-                        commands.entity(entity).despawn();
-                    }
+                AudioFileEndBehavior::Despawn => {
+                    commands.entity(entity).despawn();
                 }
             }
         }

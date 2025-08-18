@@ -57,7 +57,7 @@ fn handle_interactive_sound(
                 source: AudioSourceHandle(asset_server.load("click.wav")),
                 ..default()
             },
-            AudioFileEndBehavior::Despawn { recursive: false },
+            AudioFileEndBehavior::Despawn,
         ));
     }
     if keyboard.just_pressed(KeyCode::Space) {
