@@ -62,14 +62,10 @@ fn init_objects(
             children.spawn((
                 Doppler(1.0),
                 SpatialEmitter::default(),
-                AudioFileBundle {
-                    source: AudioSourceHandle(source),
-                    settings: AudioFileSettings {
-                        loop_region: Some(Region::from(3.6..6.0)),
-                        ..default()
-                    },
+                AudioFileBundle::new(AudioSourceHandle(source)).with_settings(AudioFileSettings {
+                    loop_region: Some(Region::from(3.6..6.0)),
                     ..default()
-                },
+                }),
                 Transform::from_xyz(0., 0., 2.5),
                 Mesh3d(meshes.add(Sphere::new(0.1).mesh())),
                 MeshMaterial3d(materials.add(StandardMaterial {
@@ -134,7 +130,7 @@ fn fake_doppler_effect(
     >,
     q_cameras: Query<(&GlobalTransform, &Motion), With<FpsCam>>,
 ) {
-    let Ok((cam_transform, cam_motion)) = q_cameras.get_single() else {
+    let Ok((cam_transform, cam_motion)) = q_cameras.single() else {
         // Motion has not been added yet, wait one tick
         return;
     };

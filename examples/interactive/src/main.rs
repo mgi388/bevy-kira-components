@@ -32,15 +32,11 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         Transform::from_scale(Vec3::splat(25.0)),
-        AudioBundle {
-            source: AudioSourceHandle(audio_file),
-            settings: AudioFileSettings {
-                loop_region: Some(Region::from(3.6..6.0)),
-                start_paused: true,
-                ..default()
-            },
+        AudioBundle::new(AudioSourceHandle(audio_file)).with_settings(AudioFileSettings {
+            loop_region: Some(Region::from(3.6..6.0)),
+            start_paused: true,
             ..default()
-        },
+        }),
         InteractiveSound,
     ));
 }
@@ -53,10 +49,7 @@ fn handle_interactive_sound(
 ) {
     if keyboard.just_pressed(KeyCode::KeyA) {
         commands.spawn((
-            AudioFileBundle {
-                source: AudioSourceHandle(asset_server.load("click.wav")),
-                ..default()
-            },
+            AudioFileBundle::new(AudioSourceHandle(asset_server.load("click.wav"))),
             AudioFileEndBehavior::Despawn,
         ));
     }

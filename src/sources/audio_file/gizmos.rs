@@ -1,6 +1,6 @@
 //! Audio source gizmos.
 
-use bevy::{color::palettes::tailwind::*, prelude::*, transform::TransformSystem};
+use bevy::{color::palettes::tailwind::*, prelude::*, transform::TransformSystems};
 
 use crate::spatial::SpatialEmitter;
 
@@ -52,7 +52,7 @@ impl Plugin for AudioSourceGizmoPlugin {
                         config.config::<AudioSourceGizmoConfigGroup>().1.draw_all
                     }),
                 )
-                    .after(TransformSystem::TransformPropagate),
+                    .after(TransformSystems::Propagate),
             );
     }
 }

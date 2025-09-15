@@ -52,7 +52,7 @@
 #![warn(missing_docs)]
 
 use bevy::prelude::*;
-use bevy::transform::TransformSystem;
+use bevy::transform::TransformSystems;
 pub use kira;
 use kira::manager::{AudioManager, AudioManagerSettings};
 
@@ -118,7 +118,7 @@ impl Plugin for AudioPlugin {
         app.configure_sets(PreUpdate, AudioPlaybackSet::Setup)
             .configure_sets(
                 PostUpdate,
-                AudioPlaybackSet::Update.after(TransformSystem::TransformPropagate),
+                AudioPlaybackSet::Update.after(TransformSystems::Propagate),
             );
     }
 }

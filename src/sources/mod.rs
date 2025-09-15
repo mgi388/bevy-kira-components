@@ -112,14 +112,27 @@ pub struct AudioBundle<T: AudioSource> {
     pub marker: InternalAudioMarker,
 }
 
-impl<T: AudioSource> Default for AudioBundle<T> {
-    fn default() -> Self {
+impl<T: AudioSource> AudioBundle<T> {
+    /// Create a new [`AudioBundle`] with the given source and default settings.
+    pub fn new(source: AudioSourceHandle<T>) -> Self {
         Self {
-            source: AudioSourceHandle::<T>::default(),
+            source,
             settings: T::Settings::default(),
             output: OutputDestination::MainOutput,
             marker: InternalAudioMarker,
         }
+    }
+
+    /// Set the settings for the audio source.
+    pub fn with_settings(mut self, settings: T::Settings) -> Self {
+        self.settings = settings;
+        self
+    }
+
+    /// Set the output destination for the audio source.
+    pub fn with_output(mut self, output: OutputDestination) -> Self {
+        self.output = output;
+        self
     }
 }
 
@@ -127,12 +140,6 @@ impl<T: AudioSource> Default for AudioBundle<T> {
 /// [`AudioSource`].
 #[derive(Component, Clone, Debug, Deref, DerefMut, Eq, PartialEq)]
 pub struct AudioSourceHandle<T: AudioSource>(pub Handle<T>);
-
-impl<T: AudioSource> Default for AudioSourceHandle<T> {
-    fn default() -> Self {
-        Self(Handle::Weak(AssetId::default()))
-    }
-}
 
 impl<T: AudioSource> From<AudioSourceHandle<T>> for AssetId<T> {
     fn from(handle: AudioSourceHandle<T>) -> Self {

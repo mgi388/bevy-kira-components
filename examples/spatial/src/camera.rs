@@ -4,7 +4,7 @@ use bevy::input::mouse::{MouseButtonInput, MouseMotion};
 use bevy::input::ButtonState;
 use bevy::math::vec2;
 use bevy::prelude::*;
-use bevy::window::{CursorGrabMode, PrimaryWindow};
+use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 
 pub struct CameraPlugin;
 
@@ -26,14 +26,14 @@ const PAN_SPEED: Vec2 = vec2(0.1, 0.1);
 fn handle_fps_camera(
     keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
-    q_windows: Query<&Window, With<PrimaryWindow>>,
-    mut motion: EventReader<MouseMotion>,
+    q_windows: Query<&CursorOptions, With<PrimaryWindow>>,
+    mut motion: MessageReader<MouseMotion>,
     mut q_camera: Query<(&mut Transform, &mut FpsCam), With<FpsCam>>,
 ) {
     let mouse_delta =
         motion.read().fold(Vec2::ZERO, |acc, ev| acc + ev.delta) * PAN_SPEED * time.delta_secs();
-    let window = q_windows.single().unwrap();
-    if window.cursor_options.grab_mode == CursorGrabMode::None {
+    let cursor_options = q_windows.single().unwrap();
+    if cursor_options.grab_mode == CursorGrabMode::None {
         return;
     }
 
@@ -72,26 +72,26 @@ fn handle_fps_camera(
 }
 
 fn cursor_lock(
-    mut q_windows: Query<&mut Window, With<PrimaryWindow>>,
-    mut mouse_events: EventReader<MouseButtonInput>,
+    mut q_windows: Query<&mut CursorOptions, With<PrimaryWindow>>,
+    mut mouse_events: MessageReader<MouseButtonInput>,
 ) {
-    let mut window = q_windows.single_mut().unwrap();
+    let mut cursor_options = q_windows.single_mut().unwrap();
     let is_pressed = mouse_events
         .read()
         .any(|ev| ev.state == ButtonState::Pressed);
     if is_pressed {
-        window.cursor_options.grab_mode = CursorGrabMode::Locked;
-        window.cursor_options.visible = false;
+        cursor_options.grab_mode = CursorGrabMode::Locked;
+        cursor_options.visible = false;
     }
 }
 
 fn cursor_unlock(
-    mut q_windows: Query<&mut Window, With<PrimaryWindow>>,
+    mut q_windows: Query<&mut CursorOptions, With<PrimaryWindow>>,
     keys: Res<ButtonInput<KeyCode>>,
 ) {
-    let mut window = q_windows.single_mut().unwrap();
+    let mut cursor_options = q_windows.single_mut().unwrap();
     if keys.just_released(KeyCode::Escape) {
-        window.cursor_options.grab_mode = CursorGrabMode::None;
-        window.cursor_options.visible = true;
+        cursor_options.grab_mode = CursorGrabMode::None;
+        cursor_options.visible = true;
     }
 }
