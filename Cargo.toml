@@ -15,12 +15,12 @@ edition = "2021"
 [dependencies]
 bevy_math = { version = "0.17.0-rc", features = ["mint"] }
 cpal = "0.15.3"
-kira = { version = "0.9", features = ["serde"] }
+kira = { version = "0.10", features = ["serde"] }
 thiserror = "2"
 serde = { version = "1", features = ["derive"] }
 
 [dependencies.bevy]
-version = "0.17.0-rc"
+version = "0.17"
 default-features = false
 features = ["bevy_asset", "bevy_color", "bevy_gizmos", "bevy_log", "zstd_rust"]
 
@@ -28,7 +28,7 @@ features = ["bevy_asset", "bevy_color", "bevy_gizmos", "bevy_log", "zstd_rust"]
 ringbuf = "0.4"
 
 [dev-dependencies.bevy]
-version = "0.17.0-rc"
+version = "0.17"
 default-features = false
 features = [
     # Copied from bevy with "bevy_audio" removed
